@@ -9,11 +9,13 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
+  "devDependencies": {
     "@attachments/matting": "workspace:^",
     "@attachments/utils": "workspace:^",
+    "@vitejs/plugin-vue": "^5.0.4",
     "react": "^18.2.0",
     "typescript": "^5.3.3",
+    "vite": "^5.1.4",
     "vue": "^3.4.20"
   }
 }
