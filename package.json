@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "list": "echo \"vue:dev, node:dev\" && exit 1",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "vue:dev": "npm run --prefix ./play vue:dev",
+    "node:dev": "npm run --prefix ./play node:dev"
   },
   "keywords": [],
   "author": "",

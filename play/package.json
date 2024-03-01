@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "vue:dev": "npm run --prefix ./vue dev",
+    "node:dev": "npm run --prefix ./node dev",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
