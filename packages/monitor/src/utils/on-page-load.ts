@@ -1,4 +1,4 @@
-import { getBrowserWindow, getDocument } from '@attachments/utils/browser';
+import { getBrowserWindow, getDocument } from './browser-api-accessors';
 
 /**
  * 当页面加载完触发- 创建一个宏任务并执行

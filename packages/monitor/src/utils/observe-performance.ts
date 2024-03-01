@@ -1,4 +1,4 @@
-import { getPerformanceObserver } from '@attachments/utils/browser';
+import { getPerformanceObserver } from './browser-api-accessors';
 import type { destoryType } from '../types';
 
 /**
