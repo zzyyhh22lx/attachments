@@ -1,9 +1,9 @@
-import type { ElementOptions, Size, AreaType } from '../../types';
-import { DefaultStyleVal } from '../../types';
-import { BaseMap } from '../base-map';
+import type { ElementOptions, Size, AreaType } from '../types';
+import { DefaultStyleVal } from '../types';
+import { BaseMap } from './base-map';
 
 /**
- * 小地图
+ * 扩展了小地图功能
  */
 export class MiniMap extends BaseMap {
     miniCanvas: HTMLCanvasElement;
@@ -19,6 +19,9 @@ export class MiniMap extends BaseMap {
     scale: number;
     /** 与原地图比例 */
     proption: number;
+
+    /** 小地图历史记录 */
+    miniHistory: ImageData[];
     /** 缩放监听器函数 */
     onMiniMapWheelListener: (e: WheelEvent) => void;
     onMiniMapDownListener: (e: MouseEvent) => void;
@@ -34,6 +37,7 @@ export class MiniMap extends BaseMap {
         this.dragStartX = 0;
         this.dragStartY = 0;
         this.scale = 1;
+        this.miniHistory = [];
 
         this.miniCanvas = miniCanvas;
         this.miniCanvas.width = size.width;
@@ -46,6 +50,8 @@ export class MiniMap extends BaseMap {
 
         this.miniImg.onload = () => {
             this.drawImg(this.miniCtx, this.miniImg, this.miniCanvas);
+            const imageData = this.miniCtx.getImageData(0, 0, this.width, this.height);
+            this.miniHistory.push(imageData);
         }
 
         this.proption = elementOptions.width / size.width;
@@ -70,7 +76,8 @@ export class MiniMap extends BaseMap {
     }
 
     /**
-     * 清空画布，画背景图图
+     * 清空画布，画背景图图(重置该函数)
+     * 清理画布需要清理scale倍数的画布 而不是1比1清理
      * @param ctx 
      * @param img 
      * @param canvas 
@@ -88,7 +95,8 @@ export class MiniMap extends BaseMap {
     }
 
     /**
-     * 画当前区域所有的点
+     * 画当前区域所有的点(重置该函数)
+     * 对于缩放的时候 需要将radius/scale 不然显示有问题
      * @param {*} ctx 
      * @param {*} area 
      */
@@ -98,63 +106,10 @@ export class MiniMap extends BaseMap {
             ctx.moveTo(p.x, p.y);
             ctx.globalAlpha = 0.85;
             ctx.beginPath();
-            ctx.arc(p.x, p.y, p.radius, 0, Math.PI*2);
+            ctx.arc(p.x, p.y, p.radius / this.scale, 0, Math.PI*2);
             ctx.closePath();
             ctx.fillStyle = p.color;
             ctx.strokeStyle = DefaultStyleVal.stroke_style;
-            ctx.fill();
-        })
-    }
-
-    /**
-     * 画当前区域的所有的线
-     * @param {*} ctx 
-     * @param {*} area 
-     */
-    drawLine(ctx: CanvasRenderingContext2D, area: AreaType) {
-        const { points } = area;
-        points.forEach((p, i) => {
-            if (i === 0) {
-                ctx.moveTo(p.x, p.y)
-            } else {
-                ctx.lineTo(p.x, p.y)
-            }
-        })
-        ctx.lineWidth = DefaultStyleVal.line_width;
-        ctx.strokeStyle = DefaultStyleVal.line_stroke_style;
-        ctx.stroke();
-    }
-
-    /**
-     * 小地图绘制边框 (缩放时定位)
-     */
-
-
-    /**
-     * 画背景图，画所有区域
-     * @param canvas 
-     * @param ctx 
-     * @param areas 
-     * @param selectAreaIndex 选择的区域index
-     */
-    drawAllFunc(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, areas: AreaType[], selectAreaIndex: number = -1) {
-        // 重置缩放矩阵
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        // 缩放
-        this.ctx.translate(this.offsetX, this.offsetY);
-        this.ctx.scale(this.scale, this.scale);
-        this.drawImg(ctx, this.img, canvas);
-        areas.forEach((area, i) => {
-            this.drawPoint(ctx, area);
-            ctx.beginPath();
-            this.drawLine(ctx, area);
-            ctx.closePath();
-            // 设置选中区域拖动时fill颜色
-            if (i === selectAreaIndex) {
-                ctx.fillStyle = DefaultStyleVal.move_fill_style;
-            } else {
-                ctx.fillStyle = DefaultStyleVal.fill_style
-            }
             ctx.fill();
         })
     }
@@ -181,6 +136,12 @@ export class MiniMap extends BaseMap {
               points: updatedPoints
             };
         }), selectAreaIndex);
+
+        // 重置缩放矩阵
+        this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+        // 缩放
+        this.ctx.translate(this.offsetX, this.offsetY);
+        this.ctx.scale(this.scale, this.scale);
         this.drawAllFunc(this.canvas, this.ctx, this.areas, selectAreaIndex);
         
         // 小地图绘制边框(缩放时定位)

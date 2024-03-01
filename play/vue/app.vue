@@ -6,7 +6,7 @@
 </template>
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
-import { MiniMap } from '@attachments/matting/src/toolkits/extensions/mini-map';
+import { MiniMap } from '@attachments/matting/src/toolkits/mini-map';
 const map = ref();
 const miniMap = ref();
 onMounted(() => {

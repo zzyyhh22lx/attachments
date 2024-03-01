@@ -12,7 +12,11 @@ export class BaseMap {
     height: number;
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
+    /** 克隆的canvas元素 */
+    clone_canvas: HTMLCanvasElement;
+    clone_ctx: CanvasRenderingContext2D;
     img: HTMLImageElement;
+    /** 区域信息 */
     areas: Area[];
     /** 历史记录 */
     history: ImageData[];
@@ -32,6 +36,12 @@ export class BaseMap {
         this.canvas.height = elementOptions.height;
         this.ctx = canvas.getContext("2d", { willReadFrequently: true })!;
 
+        // 克隆canvas，方便原图切割图片
+        this.clone_canvas = document.createElement("canvas");
+        this.clone_canvas.width = elementOptions.width;
+        this.clone_canvas.height = elementOptions.height;
+        this.clone_ctx = this.clone_canvas.getContext("2d", { willReadFrequently: true })!;
+
         this.areas = [];
         this.history = [];
         this.ctxs = [];
@@ -42,6 +52,7 @@ export class BaseMap {
 
         this.img.onload = () => {
             this.drawImg(this.ctx, this.img, this.canvas);
+            this.drawImg(this.clone_ctx, this.img, this.clone_canvas);
             const imageData = this.ctx.getImageData(0, 0, this.width, this.height);
             this.history.push(imageData);
         };
@@ -132,5 +143,95 @@ export class BaseMap {
      */
     drawAll(selectAreaIndex: number = -1) {
         this.drawAllFunc(this.canvas, this.ctx, this.areas, selectAreaIndex);
+    }
+
+    /**
+     * 撤销上一步操作
+     */
+    undo() {
+        // 思路是保存每一次操作于history数组中，栈弹出
+        if (this.history.length > 1) {
+            // 从历史记录数组中删除最后一项
+            this.history.pop();
+
+            // 恢复倒数第二项的图像数据到 canvas 上
+            const imageData = this.history[this.history.length - 1];
+            this.ctx.putImageData(imageData, 0, 0);
+
+            const A = this.areas[this.areas.length - 1];
+            A.points.pop();
+    
+        }
+    }
+
+    /**
+     * 获取选中的base64图片
+     * @returns base64
+     */
+    getSelectImage() {
+        // ctxs保存所有闭合区域
+        const ctxs: CanvasRenderingContext2D[] = [];
+        this.areas.forEach(area => {
+            const my_canvas_clone = document.createElement("canvas");
+            my_canvas_clone.width = this.width;
+            my_canvas_clone.height = this.height;
+            const my_ctx_clone = my_canvas_clone.getContext("2d");
+            // 克隆一个新的canvas(后续保存图片)
+            this.drawAllFunc(my_canvas_clone, my_ctx_clone!, [area]);
+            ctxs.push(my_ctx_clone!);
+        });
+        
+        let minX = 0, minY = 0, maxX = this.width, maxY = this.height;
+
+        // 获取矩形区域内的图像数据
+        let imageData = this.clone_ctx!.getImageData(minX, minY, maxX - minX, maxY - minY);
+
+        // 检查新 canvas 上的每个像素是否位于原始路径内，如果不是，则将该像素设置为透明
+        for (let y = 0; y < this.clone_canvas.height; y++) {
+            for (let x = 0; x < this.clone_canvas.width; x++) {
+                if (ctxs.every(ctx => !ctx.isPointInPath(x + minX, y + minY))) {
+                    let index = (y * this.clone_canvas.width + x) * 4;
+                    imageData.data[index + 3] = 0; // 设置 alpha 通道为 0（透明）
+                }
+            }
+        }
+        // 将修改后的图像数据重新绘制到新 canvas 上
+        this.clone_ctx!.putImageData(imageData, 0, 0);
+
+        // 将新 canvas 转换为 Data URL
+        const base64Img = this.clone_canvas.toDataURL();
+        // 重置
+        this.drawAllFunc(this.clone_canvas, this.clone_ctx!, []);
+        // 释放
+        ctxs.length = 0;
+
+        return base64Img;
+    }
+
+    /**
+     * 删除第几个区域
+     * @param {*} value number 
+     * @returns 
+     */
+    delectArea(value: number) {
+        const n = Number(value);
+        if (Number.isNaN(n)) {
+            console.log('请输入数字');
+            return;
+        }
+        if (this.areas.length < n) {
+            console.log('区域不存在');
+            return;
+        }
+        this.areas.splice(n - 1, 1);
+        this.drawAllFunc(this.canvas, this.ctx, this.areas);
+    }
+
+    /**
+     * 重置
+     */
+    reset() {
+        this.drawAllFunc(this.canvas, this.ctx, []);
+        this.areas.length = 0;
     }
 }
