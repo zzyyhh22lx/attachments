@@ -6,8 +6,8 @@ import { MiniMap } from '../mini-map';
 /**
  * 单点功能
  */
-export class InteractiveMap extends MiniMap {
-
+export class SingleClick extends MiniMap {
+    // 
     lineStatus: boolean;
     // 是否可画
     canDraw: boolean;
@@ -32,7 +32,6 @@ export class InteractiveMap extends MiniMap {
     constructor(canvas: HTMLCanvasElement, elementOptions: ElementOptions, MiniCanvas: HTMLCanvasElement, size: Size) {
         super(canvas, elementOptions, MiniCanvas, size);
 
-
         this.lineStatus = false;
         this.canDraw = true;
 
@@ -47,6 +46,10 @@ export class InteractiveMap extends MiniMap {
 
         this.downx = 0;
         this.downy = 0;
+
+        this.canvas.addEventListener('mousedown', this.onSingledownListner);
+        this.canvas.addEventListener('mousemove', this.onSingleMoveListner);
+        this.canvas.addEventListener('mouseup', this.onSingleUpListner);
     }
 
     /**
@@ -54,25 +57,23 @@ export class InteractiveMap extends MiniMap {
      * @param {*} e 
      */
     onMouseDown(e: MouseEvent) {
-        if (!this.lineStatus) {
-            const x = e.pageX - this.canvas.offsetLeft;
-            const y = e.pageY - this.canvas.offsetTop;
-            this.downx = x;
-            this.downy = y;
-            this.isMouseDown = true;
+        const x = e.pageX - this.canvas.offsetLeft;
+        const y = e.pageY - this.canvas.offsetTop;
+        this.downx = x;
+        this.downy = y;
+        this.isMouseDown = true;
 
-            let { pointIndex, areaIndex } = this.findPointIndex(this.ctx, this.areas, x, y); // 先找点，看看用户长按的是不是某个区域的某个点，找到了就不用再找区域了
+        let { pointIndex, areaIndex } = this.findPointIndex(this.ctx, this.areas, x, y); // 先找点，看看用户长按的是不是某个区域的某个点，找到了就不用再找区域了
 
-            if (areaIndex === -1) areaIndex = this.drawAndFindAreaIndex(this.ctx, this.areas, x, y); // 找不到点，再找区域，看看用户是不是长按了某个区域
+        if (areaIndex === -1) areaIndex = this.drawAndFindAreaIndex(this.ctx, this.areas, x, y); // 找不到点，再找区域，看看用户是不是长按了某个区域
 
-            if (areaIndex >= 0) {
-                this.canDraw = false;
-                this.selectAreaIndex = areaIndex;
-                this.selectPointIndex = pointIndex;
-            } else {
-                this.isDraw = true;
-                this.clickPoint(e);
-            }
+        if (areaIndex >= 0) {
+            this.canDraw = false;
+            this.selectAreaIndex = areaIndex;
+            this.selectPointIndex = pointIndex;
+        } else {
+            this.isDraw = true;
+            this.clickPoint(e);
         }
     }
 
@@ -166,15 +167,6 @@ export class InteractiveMap extends MiniMap {
     }
 
     /**
-     * 画背景图图
-     * @param {*} ctx 
-     * @param {*} img 
-     */
-    drawImg(ctx: CanvasRenderingContext2D, img: HTMLImageElement) {
-        ctx.drawImage(img, 0, 0, this.width, this.height);
-    }
-
-    /**
      * 画当前区域所有的点
      * @param {*} ctx 
      * @param {*} area 
@@ -248,7 +240,6 @@ export class InteractiveMap extends MiniMap {
      */
     drawAndFindAreaIndex(ctx: CanvasRenderingContext2D, areas: Area[], x: number, y: number) {
         ctx.clearRect(0, 0, this.width, this.height);
-        this.drawImg(ctx, this.img);
         let index = -1;
         areas.forEach((area, i) => {
             this.drawPoint(ctx, area);

@@ -4,7 +4,7 @@ import { observerPerformance } from '../utils/observe-performance';
 import type { ListenerType, destoryType } from '../types';
 /**
  * 前端监控-静态资源
- * 
+ * 性能检测通常用于监测和记录页面加载过程中的性能指标，例如页面加载时间、资源加载时间、首次渲染时间等。它主要关注页面加载的性能指标
  */
 export const createAssetsMonitor = (): ListenerType => {
     const observerOptions: PerformanceObserverInit = {

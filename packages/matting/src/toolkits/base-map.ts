@@ -2,6 +2,7 @@ import type { ElementOptions, Position, AreaType } from '../types';
 import { Point, Area } from '../base';
 import { DefaultStyleVal } from '../types';
 import { getElementDistance } from '../utils/get-distance';
+import { isAllBzPointInPath } from '../utils/geometry-utils';
 /**
  * 可基于此Map进行扩展
  * 
@@ -169,42 +170,18 @@ export class BaseMap {
      * @returns base64
      */
     getSelectImage() {
-        // ctxs保存所有闭合区域
-        const ctxs: CanvasRenderingContext2D[] = [];
-        this.areas.forEach(area => {
-            const my_canvas_clone = document.createElement("canvas");
-            my_canvas_clone.width = this.width;
-            my_canvas_clone.height = this.height;
-            const my_ctx_clone = my_canvas_clone.getContext("2d");
-            // 克隆一个新的canvas(后续保存图片)
-            this.drawAllFunc(my_canvas_clone, my_ctx_clone!, [area]);
-            ctxs.push(my_ctx_clone!);
-        });
-        
-        let minX = 0, minY = 0, maxX = this.width, maxY = this.height;
-
-        // 获取矩形区域内的图像数据
-        let imageData = this.clone_ctx!.getImageData(minX, minY, maxX - minX, maxY - minY);
-
-        // 检查新 canvas 上的每个像素是否位于原始路径内，如果不是，则将该像素设置为透明
-        for (let y = 0; y < this.clone_canvas.height; y++) {
-            for (let x = 0; x < this.clone_canvas.width; x++) {
-                if (ctxs.every(ctx => !ctx.isPointInPath(x + minX, y + minY))) {
-                    let index = (y * this.clone_canvas.width + x) * 4;
-                    imageData.data[index + 3] = 0; // 设置 alpha 通道为 0（透明）
+        let imgData = this.clone_ctx.getImageData(0, 0, this.width, this.height);
+        for(let y = 0; y < this.height; y++) {
+            for(let x = 0; x < this.width; x++) {
+                let index = (y * this.width + x) * 4;
+                if (!isAllBzPointInPath(this.areas, x, y)) {
+                    imgData.data[index + 3] = 0;
                 }
             }
         }
-        // 将修改后的图像数据重新绘制到新 canvas 上
-        this.clone_ctx!.putImageData(imageData, 0, 0);
-
-        // 将新 canvas 转换为 Data URL
+        this.clone_ctx.putImageData(imgData, 0, 0);
         const base64Img = this.clone_canvas.toDataURL();
-        // 重置
-        this.drawAllFunc(this.clone_canvas, this.clone_ctx!, []);
-        // 释放
-        ctxs.length = 0;
-
+        this.drawAllFunc(this.clone_canvas, this.clone_ctx, this.areas);
         return base64Img;
     }
 

@@ -44,6 +44,7 @@ export class Point {
 export class Area {
   public points: Point[];
   public isbezier: boolean;
+  public isFill: boolean;
 
   /**
    * 连接线是否是贝塞尔曲线
@@ -52,6 +53,7 @@ export class Area {
   constructor(isbezier = false) {
     this.points = [];
     this.isbezier = isbezier;
+    this.isFill = false;
   }
   /**
    * 添加点对象
@@ -60,6 +62,7 @@ export class Area {
   add(...point: Point[]): void {
     this.points.push(...point);
   }
+  
 }
 
 export const $bus = new EventEmitter();
