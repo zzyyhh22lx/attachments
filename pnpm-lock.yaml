@@ -12,9 +12,9 @@ importers:
         specifier: ^4.17.21
         version: 4.17.21
     devDependencies:
-      '@attachments/matting':
+      '@attachments/skin':
         specifier: workspace:^
-        version: link:packages/matting
+        version: link:packages/skin
       '@attachments/utils':
         specifier: workspace:^
         version: link:packages/utils
@@ -49,9 +49,19 @@ importers:
         specifier: workspace:^
         version: link:../utils
 
+  packages/skin:
+    devDependencies:
+      '@attachments/utils':
+        specifier: workspace:^
+        version: link:../utils
+
+  packages/source-code: {}
+
   packages/utils: {}
 
   play: {}
+
+  play/node: {}
 
   play/vue:
     dependencies:

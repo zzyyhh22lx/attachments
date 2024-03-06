@@ -6,7 +6,7 @@
 </template>
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
-import { SingleClick } from '@attachments/matting/src/toolkits/extensions/single-click';
+import { SingleClick } from '@attachments/skin/src/toolkits/extensions/single-click';
 const map = ref();
 const miniMap = ref();
 onMounted(() => {
