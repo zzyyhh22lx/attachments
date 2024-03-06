@@ -68,6 +68,9 @@ importers:
       '@attachments/monitor':
         specifier: workspace:^
         version: link:../../packages/monitor
+      '@attachments/skin':
+        specifier: workspace:^
+        version: link:../../packages/skin
 
 packages:
 
