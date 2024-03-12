@@ -26,5 +26,5 @@ class Even {
     }
 }
 const x = new Even();
-console.log(x instanceof Even); // false
+// console.log(x instanceof Even); // false
 console.log(2 as any instanceof Even); // true
