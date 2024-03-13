@@ -1,7 +1,7 @@
 {
   "name": "@attachments/source-code",
   "version": "1.0.0",
-  "description": "",
+  "description": "算法&源码",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
