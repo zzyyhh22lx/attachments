@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!-- 实现： -->
+    <div id="app">
+        {{name}}
+        <p>{{ age > 20 ? age : obj.age  }}</p>
+        <p>{{ obj.name }}</p>
+        <input v-model="obj.value" placeholder="输入" />
+        {{obj.value}}
+    </div>
+
+    <script>
+        function isObject(obj) {
+            return typeof obj === 'object' ? true : false;
+        }
+
+        // vue双向绑定实现：observer(观察者)、watcher(订阅对象)、notify(通知订阅对象的通报)、compiler(解析器)
+        // vue2使用Object.defineProperty(),缺点：不能直接监听数组，不能监听变化(属性的添加)
+        // vue3使用proxy -> 只能进行浅层的对象代理(递归循环代理)
+
+        /**
+         * 观察者
+         * 
+         * */
+        class Obsever {
+            /*
+            * data: 被观察者
+            */
+            constructor(data, vm, prop) {
+                if(isObject(data)) {
+                    // 双向绑定
+                    vm[prop] = this.defineReactive(data);
+                }
+            }
+            defineReactive(obj) {
+                if(!isObject(obj)) return;
+                Object.keys(obj).forEach(key => { // 深层绑定
+                    new Obsever(obj[key], obj, key);
+                })
+                const dep = new Dep();
+                const handler = {
+                    get(target, key, receiver) {
+                        if(Dep.target) dep.addSub(Dep.target);
+                        return Reflect.get(target, key, receiver)
+                    },
+                    set(target, key, value, receiver){
+                        if(value === target[key]) return; // 值不变直接返回
+                        Reflect.set(target, key, value, receiver)
+                        // console.log(dep)
+                        // new Obsever(value) // 替换引用类型的地址需要重新绑定响应式
+                        dep.notify(); // 改变值通知所有观察者
+                        return true;
+                    }
+                }
+                return new Proxy(obj, handler)
+            }
+        }
+
+        /*
+        * 发布订阅模式
+        */
+        class Dep {
+            static target = null; // 这里会存放当前的Watcher实例，并添加入Dep通知函数
+            constructor() {
+                this.subs = []; // 任务队列
+            }
+            addSub(sub) {
+                return this.subs.push(sub);
+            }
+            notify() { // 通知所有观察者
+                this.subs.forEach((sub) => { // 通知变化，此处会循环所有的依赖(Watcher实例)，然后调用实例的update方法。
+                    sub.update(); // 执行更新函数 (watcher 通知视图的变化)
+                    // console.log(sub.update)
+		        })
+	        }
+        }
+
+        class Watcher {
+            // 每一个Watcher都绑定一个更新函数，watcher可以收到属性的变化通知并执行相应的函数，从而更新视图。
+            constructor(vm, node, prop) {
+                Dep.target = this;
+                this.vm = vm; // 实例
+                this.node = node;
+                this.prop = prop; // 要监听的属性
+                this.update();
+                Dep.target = null;
+            }
+            update() {
+                this.get(); // 触发相应get
+                // console.log(this.node, this)
+                this.node.nodeValue = this.value //更改节点内容的关键
+            }
+            get() {
+                this.value = eval(`this.vm._data.${this.prop}`);
+            }
+        }
+
+        class Compile {
+            constructor(el, vm) {
+                this.$vm = vm; //vm为当前实例
+                this.$el = document.querySelector(el);//获得要解析的根元素
+                if(this.$el) {
+                    this.$fragment = this.nodeToFragment(this.$el);
+                    this.init(this.$fragment);
+                    this.$el.appendChild(this.$fragment); // 将类dom添加进真实dom内
+                }
+            }
+            nodeToFragment(el){ // 这里相当于生成虚拟dom(不是虚拟dom)
+                let fragment = document.createDocumentFragment(); 
+                // fragment 是一个指向空DocumentFragment对象的引用。是 DOM 节点。它们不是主 DOM 树的一部分。通常的用例是创建文档片段，将元素附加到文档片段，然后将文档片段附加到 DOM 树。在 DOM 树中，文档片段被其所有的子元素所代替。
+                // 因为文档片段存在于内存中，并不在 DOM 树中，所以将子元素插入到文档片段时不会引起页面回流（对元素位置和几何上的计算）。因此，使用文档片段通常会带来更好的性能。
+                let child;
+                while (child = el.firstChild){
+                    // fragment.appendChild()具有移动性, 相当于把el中节点移动过去.nextElementSibling
+                    fragment.appendChild(child);//append相当于剪切的功能
+                }
+                return fragment;
+            }
+            init($fragment) {
+                const childNodes = $fragment.childNodes;
+                Array.from(childNodes).forEach(node => {
+                    if(node.nodeType === 1) { // 元素节点
+                        Array.from(node.attributes).forEach(attribute => {
+                            if(attribute.nodeName === 'v-model') {
+                                node.addEventListener('input', (e) => {
+                                    const value = e.target.value;
+                                    eval(`this.$vm._data.${attribute.nodeValue} = value`);
+                                })
+                            }
+                        })
+                        this.init(node);
+                    }
+                    if(node.nodeType === 3) { // 文本节点
+                        this.compile_text(node);
+                    }
+                })
+            }
+            compile_text(node) {
+
+                function isVariable(variable) { // 判断是不是变量
+                    return !(variable === '' || parseInt(variable).toString() !== 'NaN' || (/[`'"]/).test(variable));
+                }
+
+                node.nodeValue = node.nodeValue.replace(/{{([^}]*)}}/g, (macth, context) => {
+                    context = context.trim();
+                    const exp = context.split(/[?:]/); // 三目运算符
+                    const value = exp[0].trim();
+                    // 变量，解决对于 data || age 这一类的，给data和age分别设置watcher
+                    let variables = value.split(/[^\w.'"`]/);
+                    variables.forEach(variable => {
+                        variable = variable.trim();
+                        if(isVariable(variable)) new Watcher(this.$vm, node, variable);
+                    })
+                    // 如果是三目运算符
+                    if(exp.length === 3) {
+                    // 运算表达式
+                        if(eval(`this.$vm._data.${exp[0]}`)) {
+                            if(isVariable(exp[1])) {
+                                return eval(`this.$vm._data.${exp[1]}`);
+                            }
+                            return exp[1].trim().replace(/['"`]/g, '');
+                        } else {
+                            if(isVariable(exp[2])) {
+                                return eval(`this.$vm._data.${exp[2]}`);
+                            }
+                            return exp[2].trim().replace(/['"`]/g, '');
+                        }
+                    }
+                    // 变量
+                    return eval(`this.$vm._data.${value}`)
+                })
+            }
+        }
+
+        class myVue {
+            /*
+            * options: 配置选项
+            */
+            constructor(options) {
+                this.$options = options || {};
+                const data = this._data = options.data;
+                new Obsever(data, this, '_data'); // 被观察者不能是Vnode或者基本数据类型
+                this.$compile = new Compile(options.el || document.body, this);
+            }
+        }
+
+    </script>
+
+<!-- 响应式不了，proxy需要深层代理 -->
+    <script>
+        const app = new myVue({
+            el: '#app',
+            data: {
+                name: 'y',
+                age: 19,
+                obj: {
+                    name: 'hy',
+                    value: '',
+                    age: 15
+                }
+            }
+        });
+    </script>
+</body>
+</html>

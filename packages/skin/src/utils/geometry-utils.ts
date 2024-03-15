@@ -76,7 +76,7 @@ function bezierCurveToPolygon(points: Position[], samples: number = 100): Positi
   * @param {*} y 
   * @param {*} points
 */
-function isBzPointInPath(x: number, y: number, points: Position[]) {
+export function isBzPointInPath(x: number, y: number, points: Position[]) {
     const polygon = bezierCurveToPolygon(points);
     return isPointInPolygon({ x, y }, polygon);
 }
@@ -99,4 +99,18 @@ export function isAllBzPointInPath(areas: AreaType[], x: number, y: number): boo
         if (inPath) return true;
     }
     return false;
+}
+
+/**
+ * 根据两个点生成俩个位于俩点中间的点
+ * @param {*} x1 点1
+ * @param {*} x2 点2
+ * @returns {x, y}
+ */
+export function getRandomXY(x1: Position, x2: Position): {rx: number, ry: number} {
+    const rx = (x1.x + x2.x) / 2;
+    const ry = (x1.y + x2.y) / 2;
+    return {
+        rx, ry
+    }
 }

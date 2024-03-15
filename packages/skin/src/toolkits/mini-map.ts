@@ -1,6 +1,7 @@
 import type { ElementOptions, Size, AreaType } from '../types';
 import { DefaultStyleVal } from '../types';
 import { BaseMap } from './base-map';
+import { getElementDistance } from '../utils/get-distance';
 
 /**
  * 扩展了小地图功能
@@ -73,6 +74,23 @@ export class MiniMap extends BaseMap {
      */
     MiniMap_removeAllListener() {
         this.miniCanvas.removeEventListener('wheel', this.onMiniMapWheelListener);
+    }
+
+    /**
+     * 获取x，y位置
+     * @param {*} e 
+     * @param {*} element 
+     * @returns 
+     */
+    getXY(e: MouseEvent, element: HTMLElement) {
+        const {
+            leftDistance, topDistance
+        } = getElementDistance(element);
+        const x = ((e.pageX - leftDistance - this.offsetX) / this.scale);
+        const y = ((e.pageY - topDistance - this.offsetY) / this.scale);
+        return {
+            x, y
+        }
     }
 
     /**

@@ -1,8 +1,8 @@
 import type { ElementOptions, Position, AreaType } from '../types';
 import { Point, Area } from '../base';
 import { DefaultStyleVal } from '../types';
-import { getElementDistance } from '../utils/get-distance';
 import { isAllBzPointInPath } from '../utils/geometry-utils';
+import { deepClone, debounce } from '../utils';
 /**
  * 可基于此Map进行扩展
  * 
@@ -23,6 +23,8 @@ export class BaseMap {
     history: ImageData[];
     /** ctx记录 */
     ctxs: CanvasRenderingContext2D[];
+    /** 移动的时候添加history(加一个防抖) */
+    addHistory: () => {};
     /**
      * 
      * @param canvas 
@@ -47,6 +49,10 @@ export class BaseMap {
         this.history = [];
         this.ctxs = [];
 
+        this.addHistory = debounce(() => {
+            this.history.push(deepClone(this.areas));
+        }, 200);
+
         this.img = new Image();
         this.img.src = elementOptions.src;
         this.img.crossOrigin = "anonymous";
@@ -58,6 +64,8 @@ export class BaseMap {
             this.history.push(imageData);
         };
     }
+
+
 
     /**
      * 清空画布，画背景图图

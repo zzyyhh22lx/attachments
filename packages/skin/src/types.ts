@@ -49,4 +49,10 @@ export enum DefaultStyleVal {
   scale_step = 0.1,
   mini_stroke_style = '#6C8AFF',
   mini_line_width = 1,
+
+  /** 贝塞尔曲线 */
+  bezier_color = 'red',
+  bezier_aux_strokestyle = 'rgba(0,0,0,0.5)',
+  bezier_aux_color = 'blue',
+  bezier_aux_shape = 'square',
 }

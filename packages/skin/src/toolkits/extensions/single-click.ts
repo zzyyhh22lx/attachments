@@ -4,7 +4,7 @@ import { DefaultStyleVal } from '../../types';
 import { MiniMap } from '../mini-map';
 
 /**
- * 单点功能
+ * 单点功能 （该功能尚未搬进来）
  */
 export class SingleClick extends MiniMap {
     // 
@@ -47,9 +47,9 @@ export class SingleClick extends MiniMap {
         this.downx = 0;
         this.downy = 0;
 
-        this.canvas.addEventListener('mousedown', this.onSingledownListner);
-        this.canvas.addEventListener('mousemove', this.onSingleMoveListner);
-        this.canvas.addEventListener('mouseup', this.onSingleUpListner);
+        // this.canvas.addEventListener('mousedown', this.onSingledownListner);
+        // this.canvas.addEventListener('mousemove', this.onSingleMoveListner);
+        // this.canvas.addEventListener('mouseup', this.onSingleUpListner);
     }
 
     /**
