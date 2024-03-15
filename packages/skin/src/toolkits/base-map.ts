@@ -24,7 +24,7 @@ export class BaseMap {
     /** ctx记录 */
     ctxs: CanvasRenderingContext2D[];
     /** 移动的时候添加history(加一个防抖) */
-    addHistory: () => {};
+    addHistory: () => void;
     /**
      * 
      * @param canvas 
