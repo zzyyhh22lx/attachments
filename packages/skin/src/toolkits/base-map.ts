@@ -1,7 +1,7 @@
 import type { ElementOptions, Position, AreaType } from '../types';
 import { Point, Area } from '../base';
 import { DefaultStyleVal } from '../types';
-import { isAllBzPointInPath } from '../utils/geometry-utils';
+import { isAllBzAreasInPath } from '../utils/geometry-utils';
 import { deepClone, debounce } from '../utils';
 /**
  * 可基于此Map进行扩展
@@ -182,7 +182,7 @@ export class BaseMap {
         for(let y = 0; y < this.height; y++) {
             for(let x = 0; x < this.width; x++) {
                 let index = (y * this.width + x) * 4;
-                if (!isAllBzPointInPath(this.areas, x, y)) {
+                if (!isAllBzAreasInPath(this.areas, x, y)) {
                     imgData.data[index + 3] = 0;
                 }
             }

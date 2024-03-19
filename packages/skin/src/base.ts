@@ -1,4 +1,3 @@
-import { EventEmitter } from '@attachments/utils/src/public'
 import type { StyleOptions, Position } from './types';
 import { DefaultStyleVal } from './types';
 
@@ -65,4 +64,3 @@ export class Area {
   
 }
 
-export const $bus = new EventEmitter();

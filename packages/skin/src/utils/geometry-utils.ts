@@ -88,9 +88,26 @@ export function isBzPointInPath(x: number, y: number, points: Position[]) {
   * @param {*} y 
   * @returns 
 */
-export function isAllBzPointInPath(areas: AreaType[], x: number, y: number): boolean {
+export function isAllBzPointInPath(area: AreaType, x: number, y: number): boolean {
     let inPath = false;
-    for (const area of areas) {
+    if (area.isbezier) {
+        inPath = isBzPointInPath(x, y, area.points);
+    } else {
+        inPath = isPointInPolygon({x, y}, area.points);
+    }
+    if (inPath) return true;
+    return false;
+}
+
+/**
+  * @param {*} areas 
+  * @param {*} x 
+  * @param {*} y 
+  * @returns 
+*/
+export function isAllBzAreasInPath(areas: AreaType[], x: number, y: number): boolean {
+    let inPath = false;
+    for(let area of areas) {
         if (area.isbezier) {
             inPath = isBzPointInPath(x, y, area.points);
         } else {

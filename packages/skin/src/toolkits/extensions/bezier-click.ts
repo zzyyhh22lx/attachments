@@ -60,6 +60,7 @@ export class BeZierClick extends MiniMap {
         this.downx = x;
         this.downy = y;
         let { pointIndex, areaIndex } = this.findAllIndex(e);
+        console.log(areaIndex, pointIndex);
         if (areaIndex >= 0) { // 找到点或区域(拖动)
             if (pointIndex >= 0) { // 触发点移动
                 this.canvas.addEventListener('mousemove', this.onBeZierPointMoveListner);
@@ -163,14 +164,15 @@ export class BeZierClick extends MiniMap {
             x, y
         } = this.getXY(e, this.canvas); 
         let { pointIndex, areaIndex } = this.findPointIndex(this.ctx, this.areas, x, y); // 先找点，看看用户长按的是不是某个区域的某个点，找到了就不用再找区域了
+        console.log(areaIndex, pointIndex);
         if (areaIndex === -1) {
             areaIndex = this.findAreaIndex(this.ctx, this.areas, x, y);
         } //找不到点，再找区域，看看用户是不是长按了某个区域
         
-        if (areaIndex >= 0) {
-            this.selectAreaIndex = areaIndex;
-            this.selectPointIndex = pointIndex;
-        };
+            if (areaIndex >= 0) {
+                this.selectAreaIndex = areaIndex;
+                this.selectPointIndex = pointIndex;
+            };
         return {
             pointIndex, areaIndex
         }
@@ -213,7 +215,7 @@ export class BeZierClick extends MiniMap {
         let index = -1;
         areas.forEach((area, i) => {
             // ctx.isPointInPath检查指定的点是否在当前路径中
-            if (isAllBzPointInPath(areas, x, y)) index = i;
+            if (isAllBzPointInPath(area, x, y)) index = i;
         })
         return index;
     }
