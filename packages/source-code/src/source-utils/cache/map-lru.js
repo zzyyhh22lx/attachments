@@ -10,9 +10,11 @@
     当插入一个已存在的数据时，将它移动到队列的末尾。
 
     对于delete操作，只有通过遍历整个Map，才能获取要删除的元素。
+    Map的keys()方法时间复杂度不为常数
     因此delete方法的时间复杂度并不是O(1)。这里就是我们可以优化的点。
+
 */
-export class LRUCache {
+class LRUCache {
     constructor(n) {
         this.size = n // 初始化最大缓存数据条为n
         this.cacheMap = new Map() // 初始化缓存空间map
@@ -37,3 +39,20 @@ export class LRUCache {
         return info; 
     }
 }
+// Map的keys方法时间复杂度测试
+const A = new Map();
+for(let i = 0; i < 1000; i++) {
+    A.set(i, i);
+}
+console.time();
+console.log(A.keys().next().value);
+console.timeEnd();
+
+// 不能同时测，可能js引擎做了一些缓存处理或者性能启动优化，得到的结果是3倍左右，得出keys()复杂度为O(n)线性复杂度
+// const B = new Map();
+// for(let i = 0; i < 3000; i++) {
+//     B.set(i, i);
+// }
+// console.time();
+// console.log(B.keys().next().value);
+// console.timeEnd();
