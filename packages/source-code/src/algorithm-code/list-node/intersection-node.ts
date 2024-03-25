@@ -1,24 +1,18 @@
-class ListNode {
-    val: number
-    next: ListNode | null
-    constructor(val?: number, next?: ListNode | null) {
-        this.val = (val===undefined ? 0 : val)
-        this.next = (next===undefined ? null : next)
-    }
-}
-type HeadNode = ListNode | null;
+import type { HeadNode } from '.';
 /**
- * https://leetcode.cn/problems/intersection-of-two-linked-lists/?envType=study-plan-v2&envId=top-100-liked
- * @param headA 
- * @param headB 
+   相交链表
+   检查链表是否相交
+   https://leetcode.cn/problems/3u1WK4/
+   并非快慢指针，如果相交，则只需要O(m+n)时间复杂度
+ * @param {ListNode} headA
+ * @param {ListNode} headB
+ * @return {ListNode}
  */
-function getIntersectionNode(headA: HeadNode, headB: HeadNode): ListNode | null {
-    if (!headA || !headB) return null;
-    let p1: HeadNode = headA, p2: HeadNode = headB;
-    while(p1 !== p2) {
-        p1 = p1 === null ? headB : p1.next;
-        p2 = p2 === null ? headA : p2.next;
+const getIntersectionNode = function(headA: HeadNode, headB: HeadNode): HeadNode {
+    let h1 = headA, h2 = headB;
+    while(h1 !== h2) {
+        h1 = h1? h1.next : headB;
+        h2 = h2 ? h2.next : headA;
     }
-    // 如果不相交且长度一样则此时都为null也可跳出循环
-    return p1;
+    return h1;
 };

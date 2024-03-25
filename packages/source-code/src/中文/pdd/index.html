@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+function createDom(vdom) {
+    // 你的实现
+    if (typeof vdom !== 'object') {
+        return document.createTextNode(vdom);
+    }
+    const tag = vdom.tag;
+    const element = document.createElement(tag);
+    if (vdom.attrs) {
+        Object.keys(vdom.attrs).forEach(key => {
+            element.setAttribute(key, vdom.attrs[key]);
+        })
+    }
+    if (vdom.children) {
+        vdom.children.forEach(child => {
+            element.appendChild(createDom(child));
+        })
+    }
+    return element;
+}
+const vdom = {
+    tag: 'DIV',
+    attrs: {
+        id: 'app'
+    },
+    children: [
+        {
+            tag: 'P',
+            children: ['这是一个段落文本。']
+        },
+        {
+            tag: 'P',
+            children: [
+                '这是一个段落文本。',
+                123,
+                {
+                    tag: 'SPAN',
+                    children: [
+                        {
+                            tag: 'A',
+                            attrs: {
+                                href: 'https://example.com'
+                            },
+                            children: ['链接到example.com']
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+};
+const realDom = createDom(vdom);
+document.body.appendChild(realDom);
+    </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .search-btn {
+            width: 200px;
+            height: 50px;
+            font-size: 12px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            line-height: 20px;
+            background: rgb(0, 0, 0);
+            color: white;
+        }
+        .search-btn span::before {
+            position: absolute;
+            content: '';
+            background-image: url(./seach-icon.png);
+            background-size: 100% 100%;
+            width: 20px;
+            height: 20px;
+            transform: translateX(-20px);
+        }
+    </style>
+</head>
+<body>
+    <div class="search-btn">
+        <span>搜索问题</span>
+    </div>
+</body>
+</html>
