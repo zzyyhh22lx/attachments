@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+var __TENCENT_CHAOS_VM = function() {
+  /**
+   * @param {number} outstandingDataSize
+   * @param {number} opt_attributes
+   * @param {number} recurring
+   * @return {?}
+   */
+  var wordToHex = function getEnumerableProperties(outstandingDataSize, opt_attributes, recurring) {
+    /** @type {Array} */
+    var result = [];
+    /** @type {number} */
+    var t = 0;
+    for (;t++ < opt_attributes;) {
+      result.push(outstandingDataSize += recurring);
+    }
+    return result;
+  };
+  /**
+   * @param {Function} buf
+   * @return {?}
+   */
+  var compiled = function write(buf) {
+    /** @type {Array.<string>} */
+    var segs = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=".split("");
+    /** @type {string} */
+    var input = String(buf).replace(/[=]+$/, "");
+    /** @type {number} */
+    var il = input.length;
+    var bs;
+    var buffer;
+    /** @type {number} */
+    var bc = 0;
+    /** @type {number} */
+    var i = 0;
+    /** @type {Array} */
+    var written = [];
+    for (;i < il;i++) {
+      buffer = lines[input.charCodeAt(i)];
+      if (~buffer && (bs = bc % 4 ? 64 * bs + buffer : buffer, bc++ % 4)) {
+        written.push(255 & bs >> (-2 * bc & 6));
+      } else {
+        0;
+      }
+    }
+    return written;
+  };
+  /**
+   * @param {number} n
+   * @return {?}
+   */
+  var objectToString = function createRegularNGon(n) {
+    return n >> 1 ^ -(1 & n);
+  };
+  /**
+   * @param {Function} data
+   * @return {?}
+   */
+  var nullGetter = function init_normals(data) {
+    /** @type {Array} */
+    var yels = [];
+    /** @type {Int8Array} */
+    var parts = new Int8Array(compiled(data));
+    /** @type {number} */
+    var l = parts.length;
+    /** @type {number} */
+    var i = 0;
+    for (;l > i;) {
+      var part = parts[i++];
+      /** @type {number} */
+      var e = 127 & part;
+      if (part >= 0) {
+        yels.push(objectToString(e));
+        continue;
+      }
+      part = parts[i++];
+      e |= (127 & part) << 7;
+      if (part >= 0) {
+        yels.push(objectToString(e));
+        continue;
+      }
+      part = parts[i++];
+      e |= (127 & part) << 14;
+      if (part >= 0) {
+        yels.push(objectToString(e));
+        continue;
+      }
+      part = parts[i++];
+      e |= (127 & part) << 21;
+      if (part >= 0) {
+        yels.push(objectToString(e));
+        continue;
+      }
+      part = parts[i++];
+      e |= part << 28;
+      yels.push(objectToString(e));
+    }
+    return yels;
+  };
+  /** @type {Array} */
+  var css = [];
+  var fn;
+  var lines = wordToHex(0, 43, 0).concat([62, 0, 62, 0, 63]).concat(wordToHex(51, 10, 1)).concat(wordToHex(0, 8, 0)).concat(wordToHex(0, 25, 1)).concat([0, 0, 0, 0, 63, 0]).concat(wordToHex(25, 26, 1));
+  /** @type {function (Function): ?} */
+  var getter = nullGetter;
+  return function setter(data, val) {
+    var value = getter(data);
+    var visible;
+    var ident;
+    /**
+     * @param {?} other
+     * @param {?} duration
+     * @param {?} resize
+     * @param {?} element
+     * @param {?} callback
+     * @return {?}
+     */
+    ident = function toggle(other, duration, resize, element, callback) {
+      return function map() {
+        /** @type {Array} */
+        var obj = [resize, element, duration, this, arguments, map, value, 0];
+        var res = void 0;
+        var selector = other;
+        /** @type {Array} */
+        var eventPath = [];
+        var ret;
+        var b;
+        var k;
+        var l;
+        for (;true;) {
+          try {
+            for (;true;) {
+              switch(value[++selector] ^ obj[7]) {
+                case 0:
+                  obj[value[++selector]] = res;
+                  break;
+                case 1:
+                  selector += obj[value[++selector]] ? value[++selector] : value[++selector, ++selector];
+                  break;
+                case 2:
+                  obj[value[++selector]] += String.fromCharCode(value[++selector]);
+                  break;
+                case 3:
+                  obj[value[++selector]] += String.fromCharCode(value[++selector]);
+                  obj[value[++selector]] += String.fromCharCode(value[++selector]);
+                  obj[value[++selector]] += String.fromCharCode(value[++selector]);
+                  break;
+                case 4:
+                  eventPath.pop();
+                  break;
+                case 5:
+                  obj[value[++selector]] = obj[value[++selector]];
+                  break;
+                case 6:
+                  return obj[value[++selector]];
+                  break;
+                case 7:
+                  obj[value[++selector]][value[++selector]] = obj[value[++selector]];
+                  break;
+                case 8:
+                  obj[value[++selector]] = obj[value[++selector]].call(obj[value[++selector]], obj[value[++selector]]);
+                  break;
+                case 9:
+                  obj[value[++selector]] = obj[value[++selector]][obj[value[++selector]]];
+                  break;
+                case 10:
+                  obj[value[++selector]] = value[++selector];
+                  break;
+                case 11:
+                  throw obj[value[++selector]];break;
+                case 12:
+                  eventPath.push(selector + value[++selector]);
+                  break;
+                case 13:
+                  /** @type {string} */
+                  obj[value[++selector]] = "";
+                  break;
+                case 14:
+                  obj[value[++selector]] = ret;
+                  break;
+              }
+            }
+          } catch (array) {
+            if (eventPath.length > 0) {
+              fn = selector;
+              /** @type {Array} */
+              css = [];
+            }
+            ret = array;
+            css.push(selector);
+            if (0 === eventPath.length) {
+              throw callback ? callback(array, obj, css) : array;
+            }
+            selector = eventPath.pop();
+            css.pop();
+          }
+        }
+      };
+    };
+    return val ? visible : ident;
+  };
+}();
+__TENCENT_CHAOS_VM("HBIUGBYODBIYEBIUGAIYHRQSGA4MNhgKEBIIEBIGAhQSDBoYBhjGARjeARjcAQYY5gEY3gEY2AEEGMoBEhgAGBoUBBTYAQQU3gEODKYBEgQUzgESEhgUEBYSGBAAEg4S", false)(10, [], window, [void 0], void 0)();
+
+    </script>
+</body>
+</html>

@@ -13,5 +13,9 @@
   "dependencies": {
     "@attachments/monitor": "workspace:^",
     "@attachments/skin": "workspace:^"
+  },
+  "devDependencies": {
+    "sass": "^1.72.0",
+    "vue-router": "^4.3.0"
   }
 }
