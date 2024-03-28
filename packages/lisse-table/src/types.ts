@@ -34,6 +34,7 @@ export type tdType = {
     data: dataType[];
     height: number;
     y: number;
+    /** data length */
     length?: number;
 }
 
@@ -41,7 +42,7 @@ export type tableDataType = {
     th: {
         data: dataType[];
         height: number;
-        /** 代表没列的宽度 */
+        /** 代表每列的宽度 */
         width: number[];
     };
     td: tdType[]

@@ -83,7 +83,10 @@ class LisseTableOffscreenCanvas {
     this.wordWidth = this.ctx.measureText('a').width;
   }
 
-  // 调整列宽
+  /**
+   * 调整某一列的列宽
+   * @param info 
+   */
   changeColsWidth(info) {
     const {
       tableData: { th },
@@ -124,7 +127,10 @@ class LisseTableOffscreenCanvas {
 
     this.adaptDpr();
 
+    this.calcColsWidth();
+    this.processData();
     this.updateTable();
+
   }
 
   sortData(index) {
@@ -153,7 +159,7 @@ class LisseTableOffscreenCanvas {
   }
 
   /**
-   * 处理数据
+   * 处理数据(并且为所有tbody的数据添加坐标点)
    * @param param0 { appendData添加的数据, isAppend: boolean 是否是添加的数据(为fasle则整个data替换) }
    */
   processData(appendData: dataType[] | null = null, isAppend = false) {
@@ -287,7 +293,6 @@ class LisseTableOffscreenCanvas {
       options: { head, fit, column },
     } = this;
     let { x: headCellX } = this;
-
     th.height =
       head.fontSize * head.lineHeight + head.padding.top + head.padding.bottom;
     const headCellY =
@@ -299,6 +304,8 @@ class LisseTableOffscreenCanvas {
     ctx.textBaseline = 'top';
 
     const colsWidth: number[] = [];
+
+    this.tableWidth = 0;
 
     for (let i = 0, len = columns.length; i < len; i++) {
       const item = columns[i];
@@ -314,7 +321,6 @@ class LisseTableOffscreenCanvas {
 
       colsWidth.push(colWidth);
     }
-
     // 宽度自适应场景
     if (fit || this.tableWidth < this.canvasWidth) {
       th.width = Array(columns.length).fill(this.canvasWidth / columns.length);
@@ -324,10 +330,11 @@ class LisseTableOffscreenCanvas {
     }
 
     for (let i = 0, len = columns.length; i < len; i++) {
+      // 这里只自适应了表头th的宽度，对于表tbody的td，需要重新计算
       const item = columns[i];
       th.data[i] = {
         x: headCellX,
-        tx:
+        tx: // 这里设置了center，则tx值相当于measure字符串中间的位置
           head.textAlign === 'center' ? headCellX + th.width[i] / 2 : headCellX,
         ty: headCellY,
         text: item.title || item,
@@ -616,6 +623,7 @@ class LisseTableOffscreenCanvas {
     // 绘制table body
     ctx.font = `${cell.fontWeight} ${cell.fontSize}px ${cell.fontFamily}`;
     ctx.fillStyle = cell.color;
+    // 根据textAlign设置绘制字体的布局
     ctx.textAlign = cell.textAlign;
     ctx.textBaseline = 'top';
 

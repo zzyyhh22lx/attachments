@@ -1,4 +1,4 @@
-import OffscreenCanvasWorker from './offscreen-canvas.js?worker';
+import OffscreenCanvasWorker from './offscreen-canvas.ts?worker';
 import { mergeDeep, throttle } from './utils';
 import { defaultOptions } from './default-options';
 
@@ -7,6 +7,36 @@ import { defaultOptions } from './default-options';
  * @description Generate table width offscreenCanvas or canvas.
  */
 export class LisseTable {
+  canvas: HTMLCanvasElement;
+  data: any;
+  columns: any;
+  colTypes: any;
+  toolCanvas: HTMLCanvasElement;
+  toolCanvasCtx: any;
+  options: any;
+  x: number;
+  y: number;
+  tableWidth: number;
+  tableHeight: number;
+  waterMarkerCanvas: any;
+  eleClientRect: {};
+  ctxMenuShow: boolean;
+  tableData: any;
+  move: { target: any; ongoing: boolean; startX: number; originValue: number; index: number; range: number; };
+  wrapperEle: any;
+  lisseLoadingEle: any;
+  innerEle: any;
+  scrollerEle: any;
+  tipsEle: any;
+  tipsInnerEle: any;
+  dragBoxEle: any;
+  wmCanvasElm: any;
+  canvasWidth: number;
+  canvasHeight: number;
+  worker: any;
+  dpr: number;
+  dragMoveEvtHandler: (...arg: any[]) => void;
+  dragUpEvtHandler: () => void;
   /**
    * @constructor
    * @param {HTMLCanvasElement} canvas - The canvas element.

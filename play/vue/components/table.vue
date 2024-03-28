@@ -25,12 +25,12 @@ onMounted(() => {
   }
   const allDataTable = new LisseTable(tabled.value, {
     data,
-    columns: [1,2,3,4]
+    columns: ['16666你好你好女孩','2','3','4']
   })
   allDataTable.createTable();
 })
 </script>
-<style scoped>
+<style scoped lang="scss">
 #lisse-table-wrapper {
   position: absolute;
   left: 0;
