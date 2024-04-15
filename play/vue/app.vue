@@ -4,19 +4,24 @@
 <script lang="ts" setup>
 import { watch, reactive } from 'vue';
 /** 测试监听数组变化 */
-const r = reactive<number[]>([]);
+const r = reactive<any[]>([{
+  name: 1
+}, {
+  name: 2
+}]);
 watch(() => r, (v1, v2) => {
-  console.log(v1, v2);
+  if (v2) {
+    console.log(v2[0].name);
+  }
+  console.log(v1[0].name);
 },{
-  deep:true
+  deep:true,
+  immediate: true
 })
 setTimeout(() => {
-  r.push(1);
+  r[0].name = 4;
 })
 setTimeout(() => {
-  r.push(12);
+  r.pop();
 }, 200);
-setTimeout(() => {
-  r[0] = 2;
-}, 201);
 </script>

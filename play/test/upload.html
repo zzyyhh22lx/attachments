@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/spark-md5/3.0.2/spark-md5.js"></script>
+</head>
+<body>
+      
+<input type="file" id="fileInput" placeholder="xxx"/>
+<progress id="progressBar" max="100" value="0"></progress>
+
+<script>
+
+fileInput.addEventListener('change', async () => {
+  const file = fileInput.files[0];
+  const response = await uploadFile(file);
+  console.log(response);
+});
+const FILE_CHUNK_SIZE = 128 * 1024; // 每个文件块的大小为
+/**
+ * 将文件拆分为多个文件块进行上传
+ * @param {File} file 要上传的文件
+ * @return {Promise} 返回一个Promise对象，该对象的resolve参数为文件上传成功后的响应结果
+ */
+function uploadFile(file) {
+  return new Promise(async (resolve, reject) => {
+    const fileHash = await generateFileHash(file); // 生成文件哈希值
+    let uploadedChunks = []; // 已经上传成功的文件块位置
+    let totalChunks = Math.ceil(file.size / FILE_CHUNK_SIZE); // 文件块总数
+    // 上传文件块
+    async function uploadChunk(chunkIndex) {
+      const start = chunkIndex * FILE_CHUNK_SIZE;
+      const end =
+        chunkIndex === totalChunks - 1 ? file.size : (chunkIndex + 1) * FILE_CHUNK_SIZE;
+      const chunk = file.slice(start, end);
+
+      // 创建FormData对象并添加要上传的数据
+      const formData = new FormData();
+      formData.append('chunkIndex', chunkIndex);
+      formData.append('fileHash', fileHash);
+      formData.append('file', chunk);
+
+      try {
+        // 发送文件块上传请求
+        const res = await axios.post('http://127.0.0.1:3000/upload', formData);
+        console.log(res.data);
+        uploadedChunks.push({ index: chunkIndex, position: res.data.position });
+        if (uploadedChunks.length >= totalChunks) {
+          // 所有文件块上传成功，合并文件块
+          mergeChunks(file.name, fileHash, resolve);
+        } else {
+          // 继续上传下一个文件块
+          uploadChunk(chunkIndex + 1);
+        }
+      } catch (err) {
+        console.log('文件块上传失败', err);
+        reject(err);
+      }
+    }
+    uploadChunk(0); // 开始上传第一个文件块
+  });
+}
+
+/**
+ * 合并所有文件块为完整文件
+ * @param {string} filename 文件名
+ * @param {string} fileHash 文件哈希值
+ * @param {Function} resolve 文件上传成功后的回调函数
+ */
+async function mergeChunks(filename, fileHash, resolve) {
+  try {
+    // 发送合并文件块请求
+    const res = await axios.post('http://127.0.0.1:3000/merge', { filename, fileHash }, {
+        onUploadProgress: function(progressEvent) {
+            // 计算进度条的值
+            const progress = (progressEvent.loaded / progressEvent.total) * 100;
+            // 设置进度条的值
+            progressBar.value = progress;
+        }
+    });
+    console.log(res.data);
+    resolve(res.data);
+  } catch (err) {
+    console.log('合并文件块失败', err);
+  }
+}
+
+/**
+ * 生成文件哈希值
+ * @param {File} file 要生成哈希值的文件
+ * @return {string} 返回该文件的哈希值
+ */
+function generateFileHash(file) {
+  return new Promise((resolve, reject) => {
+    const chunkSize = 2 * 1024 * 1024; // 每个文件块的大小为2MB
+    const chunks = Math.ceil(file.size / chunkSize); // 文件块总数
+    const spark = new SparkMD5.ArrayBuffer();
+    const fileReader = new FileReader();
+    let currentChunk = 0;
+    fileReader.onload = function (e) {
+      spark.append(e.target.result);
+      currentChunk++;
+
+      if (currentChunk < chunks) {
+        loadNext();
+      } else {
+        resolve(spark.end());
+      }
+    };
+    fileReader.onerror = function () {
+      reject('文件读取失败');
+    };
+    function loadNext() {
+      const start = currentChunk * chunkSize;
+      const end = Math.min(start + chunkSize, file.size);
+      fileReader.readAsArrayBuffer(file.slice(start, end));
+    }
+    loadNext();
+  });
+}
+
+</script>
+</body>
+</html>
