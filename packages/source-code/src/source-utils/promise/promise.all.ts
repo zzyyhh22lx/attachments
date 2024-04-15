@@ -40,12 +40,15 @@ promiseAll([
         console.log(`1${val}`);
         return val;
     }),
+    Promise.reject(2),
     new Promise(res => res(1)).then(val => {
         console.log(`0${val}`);
         return val;
-    })
+    }),
 ]).then(val => {
     console.log(val);
+}).catch(e => {
+    console.log('错误', e);
 })
 // 12
 // 01

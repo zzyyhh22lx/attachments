@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>requestAnimationFrame</title>
+</head>
+<body>
+<ul id="ul"></ul>
+    <script>
+const total = 500; // 模拟数据
+const once = 100; // 一次显示100条
+function userDefer(data) {
+    let index = 0;
+    function request() {
+        requestAnimationFrame(() => {
+            if(index > data) return;
+            let add = once + index <= data ? once : data - index;
+            let i = 0;
+            while(i++ < add) {
+                const li = document.createElement('li');
+                li.innerText = ++index;
+                ul.appendChild(li);
+            }
+            request();
+        })
+    }
+    request();
+    return () => {
+        return data >= index;
+    }
+}
+const defer = userDefer(total);
+    </script>
+
+</body>
+</html>

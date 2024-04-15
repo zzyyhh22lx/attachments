@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.13/vue.min.js"></script>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+    }
+    .container {
+      overflow-y: auto;
+      box-sizing: border-box;
+      border: 1px solid black;
+    }
+    .list-item {
+      list-style: none;
+      border: 1px solid red;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- 外层盒子，固定高度 -->
+    <div class="container" :style="`height: ${boxH}px`" @scroll="handleScroll">
+      <!-- 内层滚动盒子， 高度是虚拟的数据的整体高度！！！， 这样使得滚动条更像真实的 -->
+      <div class="scroll-box" :style="`height: ${allHeight}px`">
+        <!-- 真正显示区域， 需要通过trasform 来让显示区域一直在屏幕中，而不是滑走 -->
+        <ul :style="`transform:translateY(${offsetY}px)`">
+          <li
+            v-for="item,index in nowList" :key="index"
+            :style="`height: ${itemH}px`"
+            class="list-item"
+          >{{item}}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <script>
+    new Vue({
+      el:"#app",
+      data() {
+        return {
+          boxH: 500, // 外层盒子高度
+          itemH: 100, // 每个元素的高度
+          listNum: 105, // 整体个数,这里暂时写死
+          list: [], // 列表整体数据
+          nowList: [], // 目前显示列表
+          offsetY: 0, // 显示区域动态偏移量
+          cacheNum: 5, // 上下多出5个列表项用于加载缓存
+          lastUpdateTime: Date.now(), // 用于做简单节流
+          lastScrollTop: 0, // 上一次滚动的位置
+          pageNo: 1, // 初始加载第一页数据
+          backPageNum: 15, // 后端返回的每页项目数
+        }
+      },
+      created() {
+        // 初始化第一页面的数据
+        this.init()
+      },
+      computed: {
+        allHeight() {
+          return this.listNum * this.itemH
+        },
+        pageNum() {
+          return Math.ceil(this.boxH / this.itemH) + this.cacheNum
+        }
+      },
+      methods: {
+        init() {
+          // 1.模拟获取数据
+          this.getNextPageData()
+
+          // 2. 取得当前第一页的显示数据
+          this.nowList = this.list.slice(0, this.pageNum)
+        },
+        handleScroll(e) {
+          // 简单节流一下
+          if(Date.now() - this.lastUpdateTime <= 100) return
+
+          // e.target.scrollTop 卷起高度, 需注意滑动单个元素显示一半的情况
+          const scrollTop = e.target.scrollTop
+
+          // 新增字段，用于判断是否是向上滚动
+          const isScrollTop = this.lastScrollTop < scrollTop ? true : false
+          this.lastScrollTop = scrollTop
+
+          // 1.保持显示区域一直在屏幕上
+          this.offsetY = scrollTop - (scrollTop % this.itemH)
+
+          // 2.计算卷起多少个，替换更新
+          let startIndex = Math.floor(scrollTop / this.itemH)
+          let endIndex = startIndex + this.pageNum
+
+          // 3.当向上卷起的数量超过缓存个数的时候，上面缓存设置,扩大显示区域
+          // 卷起的高度要去除缓存部分,同时修改起始位置
+          if(startIndex > this.cacheNum) {
+            this.offsetY -= this.cacheNum * this.itemH
+            startIndex = startIndex - this.cacheNum
+            
+          }
+
+          // 4. 判断是否要加载下一页内容
+          // 首先向上滚动时才需要加载下一页数据，向下滚动直接使用内存中的list中数据
+          // 其次判断当前列表数据是否已经到底
+          if(isScrollTop && this.list.length < this.listNum) {
+            this.getNextPageData()
+          }
+
+          // 5. 更新当前显示内容
+          this.nowList = this.list.slice(startIndex, endIndex)
+
+          // 6. 更新上一次刷新时间
+          this.lastUpdateTime = Date.now()
+        },
+        // 模拟获取每页数据
+        getNextPageData() {
+          // 1. 模拟获取的每页列表元素
+          const start = (this.pageNo - 1) * this.backPageNum
+          const end = start + 15
+          const list = []
+          for(let i = start; i < end; i++) {
+            list.push(i)
+          }
+          this.list = this.list.concat(list)
+          this.pageNo++
+        }
+      }
+    })
+  </script>
+</body>
+</html>

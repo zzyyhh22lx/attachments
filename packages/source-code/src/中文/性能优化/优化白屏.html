@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<ul id="ul"></ul>
+<script>
+// 优化白屏
+const total = 1000; // 模拟数据
+const once = 100; // 一次显示100条
+let index = 0;
+function userDefer(data) {
+  function request(i) {
+    requestAnimationFrame(() => {
+      if(i > total) return;
+      let fragment = document.createDocumentFragment();
+      index += once;
+      while(i <= index && i < total) {
+        let li = document.createElement("li");
+        li.innerText = i++;
+        fragment.appendChild(li);
+      }
+      ul.appendChild(fragment);
+      request(i);
+    })
+  }
+  request(index);
+  return () => {
+    return data >= index;
+  }
+}
+const defer = userDefer(total);
+    </script>
+</body>
+</html>
