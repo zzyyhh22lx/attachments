@@ -114,8 +114,8 @@ function generateFileHash(file) {
       reject('文件读取失败');
     };
     function loadNext() {
-      const start = currentChunk * chunkSize;
-      const end = Math.min(start + chunkSize, file.size);
+      const start = currentChunk * FILE_CHUNK_SIZE;
+      const end = Math.min(start + FILE_CHUNK_SIZE, file.size);
       fileReader.readAsArrayBuffer(file.slice(start, end));
     }
     loadNext();
