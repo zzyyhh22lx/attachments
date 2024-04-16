@@ -7,13 +7,12 @@ import type { HeadNode } from '.';
  * @param head 
  * @returns 
  */
-function hasCycle(head: HeadNode): boolean {
-    let slow = head;
-    let fast = head;
+export function hasCycle(head: HeadNode): boolean {
+    let fast = head, slow = head;
     while(fast?.next) {
         slow = slow?.next as HeadNode;
-        fast = fast.next.next;
-        if (slow === fast) return true;
+        fast = fast.next?.next;
+        if (fast === slow) return true;
     }
     return false;
 };

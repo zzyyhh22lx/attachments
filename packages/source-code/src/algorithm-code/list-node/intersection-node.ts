@@ -8,10 +8,10 @@ import type { HeadNode } from '.';
  * @param {ListNode} headB
  * @return {ListNode}
  */
-const getIntersectionNode = function(headA: HeadNode, headB: HeadNode): HeadNode {
+export const getIntersectionNode = function(headA: HeadNode, headB: HeadNode): HeadNode {
     let h1 = headA, h2 = headB;
     while(h1 !== h2) {
-        h1 = h1? h1.next : headB;
+        h1 = h1 ? h1.next : headB;
         h2 = h2 ? h2.next : headA;
     }
     return h1;

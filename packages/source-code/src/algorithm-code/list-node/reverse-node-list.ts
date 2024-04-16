@@ -4,11 +4,10 @@ import type { HeadNode } from '.';
  * 反转链表
  * https://leetcode.cn/problems/reverse-linked-list/?envType=study-plan-v2&envId=top-100-liked
  */
-function reverseList(head: HeadNode): HeadNode {
-    let pre: HeadNode = null;
-    let current = head;
+export function reverseList(head: HeadNode): HeadNode {
+    let pre: HeadNode = null, current = head;
     while(current) {
-        let next = current.next;
+        const next = current.next;
         current.next = pre;
         pre = current;
         current = next;
