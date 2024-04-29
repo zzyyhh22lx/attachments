@@ -1,0 +1,349 @@
+<html>
+
+<head>
+  <title>json read test</title>
+  <style>
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    #content {
+      white-space: pre-wrap;
+      border: solid 1px #BCC2DC;
+      border-radius: 4px;
+      padding: 10px;
+      width: calc(50% - 20px);
+      float: left;
+    }
+
+    .loading {
+      position: relative;
+      display: inline-flex;
+      width: 18px;
+      height: 18px;
+      background-image: linear-gradient(45deg, #066CE5 0%, #F6F8FA 100%);
+      border-radius: 100%;
+      animation: spin 2s linear infinite;
+    }
+
+    .loading::after {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 4px;
+      width: 10px;
+      height: 10px;
+      border-radius: 100%;
+      background: #fff;
+    }
+
+    .packageList {
+      width: calc(50% - 20px);
+      float: right;
+    }
+
+    .package {
+      border: solid 1px #D1D5E6;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+
+    .package:last-child {
+      margin-bottom: 0;
+    }
+
+    .packageTitle {
+      position: relative;
+      display: flex;
+      background-color: #E9EBF5;
+      padding: 10px;
+    }
+
+    .packageTitleBtns {
+      position: absolute;
+      right: 10px;
+      cursor: pointer;
+      color: #066CE5;
+    }
+
+    .packageTitle .loading {
+      margin-right: 10px;
+      display: none;
+    }
+
+    .package.isLoading .packageTitle .loading {
+      display: block;
+    }
+
+    .packageName {
+      font-weight: bold;
+    }
+
+    .packageInfo {
+      padding: 10px;
+    }
+
+    .packageInfoItem {
+      margin-bottom: 5px;
+    }
+
+    .packageInfoItem:last-child {
+      margin-bottom: 0;
+    }
+  </style>
+</head>
+
+<body style="font-size: 13px; padding: 20px;">
+  <h1>json read test</h1>
+
+  <h2 id="status"></h2>
+
+  <div>
+    <div id="content">
+    </div>
+
+    <div id="packages" class="packageList">
+    </div>
+
+    <div style="clear: both;"></div>
+  </div>
+
+  <script>
+    const trim = (str, charToRemove) => {
+      if (charToRemove === undefined) {
+        return str.trim(); // 如果未指定字符，则只使用 trim
+      }
+      // 将字符串转换为字符数组
+      let arr = str.split('');
+      // 删除前导字符
+      while (arr[0] === charToRemove) {
+        arr.shift();
+      }
+      // 删除尾随字符
+      while (arr[arr.length - 1] === charToRemove) {
+        arr.pop();
+      }
+      // 返回结果字符串
+      return arr.join('');
+    }
+
+    const supplementList = ['', ',', '",', '"],'];
+    const strParse2Obj = (str) => {
+      try {
+        const re = JSON.parse(`{${trim(str, ',')}}`);
+        if (typeof (re) === 'object') {
+          return re;
+        }
+        return null;
+      } catch (error) {
+        return null;
+      }
+    }
+    const tryParse2Obj = (str, retry = 0) => {
+      if (retry >= supplementList.length) {
+        return null;
+      }
+      const supplement = supplementList[retry];
+      const re = strParse2Obj(str + supplement);
+      if (re) {
+        return re;
+      }
+      return tryParse2Obj(str, retry + 1);
+    }
+
+    // 将返回内容（总量）转成json
+    const content2Obj = (content) => {
+      const keyMap = {
+        stepStart: '    "step": [',
+        stepOrderStart: '    "stepOrder": [',
+        itemStart: '        {',
+      };
+
+      const lines = content.split('\r\n');
+
+      let step;
+      let stepOrder;
+      let cmd = ''; // "buildStep" | "buildStepItem" | "buildStepOrder" | "buildStepOrderItem"
+      for (const line of lines) {
+        let lineDone = true; // 当前行处理状态
+        // 判断是否是标志行，如果是的话，就设置下一行的操作标识
+        switch (line) {
+          case keyMap.stepStart:
+            cmd = 'buildStep';
+            break;
+          case keyMap.stepOrderStart:
+            cmd = 'buildStepOrder';
+            break;
+          case keyMap.itemStart:
+            if (['buildStep', 'buildStepItem'].includes(cmd)) {
+              if (!step) {
+                step = [];
+              }
+              step.push({});
+              cmd = 'buildStepItem';
+            } else if (['buildStepOrder', 'buildStepOrderItem'].includes(cmd)) {
+              if (!stepOrder) {
+                stepOrder = [];
+              }
+              stepOrder.push({});
+              cmd = 'buildStepOrderItem';
+            }
+            break;
+          default:
+            // 如果不是标志位，那么当前行标识为未处理
+            lineDone = false;
+            break;
+        }
+
+        if (!lineDone) {
+          const lintTrim = line.trim();
+          if (lintTrim.startsWith('}')) {
+            continue;
+          }
+          if (lintTrim.startsWith('{') || lintTrim.startsWith('```')) {
+            continue;
+          }
+
+          if (['buildStepItem', 'buildStepOrderItem'].includes(cmd)) {
+            try {
+              // const lineObj = JSON.parse(`{${trim(lintTrim, ',')}}`);
+              const lineObj = tryParse2Obj(lintTrim);
+              if (typeof (lineObj) === 'object') {
+                if (cmd === 'buildStepItem') {
+                  step[step.length - 1] = {
+                    ...step[step.length - 1],
+                    ...lineObj,
+                  };
+                } else {
+                  stepOrder[stepOrder.length - 1] = {
+                    ...stepOrder[stepOrder.length - 1],
+                    ...lineObj,
+                  };
+                }
+              }
+            } catch (error) {
+              // console.error(error);
+              continue;
+            }
+          }
+        }
+      }
+      return {
+        step,
+        stepOrder,
+      };
+    };
+
+    // 显示内容
+    const showContent = (content) => {
+      document.getElementById('content').innerHTML = content;
+    }
+
+    const showPackages = ({ step }) => {
+      const packageObjKeyNum = 9;
+      if (step && step.length) {
+        let htmlItems = '';
+        step.forEach(item => {
+          const isLoading = Object.keys(item).length < packageObjKeyNum ? 'isLoading' : '';
+          htmlItems += `
+          <div class="package ${isLoading}">
+            <div class="packageTitle">
+              <div class="loading"></div>
+              <div class="packageName">
+                【${item.id ?? '--'}】
+                ${item.name ?? '--'}
+              </div>
+              <div class="packageTitleBtns">
+                <!-- 功能按钮 -->
+              </div>
+            </div>
+            <div class="packageInfo">
+              <div class="packageInfoItem">
+                <label>输入：</label>
+                <span>${(item.input ?? []).join(' | ')}</span>
+              </div>
+              <div class="packageInfoItem">
+                <label>执行：</label>
+                <span>${item.operation ?? ''}</span>
+              </div>
+              <div class="packageInfoItem">
+                <label>输出：</label>
+                <span>${(item.output ?? []).join(' | ')}</span>
+              </div>
+            </div>
+          </div>`;
+        });
+        document.getElementById('packages').innerHTML = htmlItems;
+      }
+    }
+
+
+    // main
+    const useStream = true; // 是否流式读取
+    const setStatus = (msg, isLoading) => {
+      document.getElementById('status').innerHTML = `
+        <div style="display: flex; align-items: center;">
+          ${isLoading ? '<div class="loading" style="margin-right: 6px;"></div>' : ''}
+          <div>${msg}</div>
+        </div>
+      `;
+    }
+    setStatus('开始请求...', true);
+    fetch('./', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: JSON.stringify({
+        useStream,
+        // maxChunkNum: 1,
+      }),
+    })
+      .then(async (response) => {
+        if (useStream) {
+          const reader = response.body.getReader();
+          let content = '';
+          setStatus('读取中...', true);
+          return new ReadableStream({
+            start(controller) {
+              const push = () => {
+                reader.read().then(({ done, value }) => {
+                  if (done) {
+                    controller.close();
+                    setStatus('读取完成。', false);
+                    return;
+                  }
+                  controller.enqueue(value);
+                  const chunkStr = new TextDecoder().decode(value);
+                  content += chunkStr;
+                  showContent(content);
+
+                  const obj = content2Obj(content);
+                  showPackages(obj);
+
+                  push();
+                })
+              };
+              push();
+            },
+          });
+        } else {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          document.getElementById('content').innerHTML = await response.text();
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  </script>
+</body>
+
+</html>

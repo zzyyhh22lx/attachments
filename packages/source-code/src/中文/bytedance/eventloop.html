@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div style="width: 100vw; height: 100vh;"></div>
+    <script>
+        document.body.addEventListener('click', () => {
+            Promise.resolve(1).then(res => {
+                console.log(res)
+            })
+            console.log(2);
+        })
+        document.body.addEventListener('click', () => {
+            Promise.resolve(3).then(res => {
+                console.log(res)
+            })
+            console.log(4);
+        })
+        // 点击的时候，输出 2143
+        /*
+        [
+            task1,
+            task2
+        ]
+        task1() -> task2()
+        task -> job -> render -> task -> job
+        */
+
+        document.body.click();
+        // 输出 2413
+        // task1(), task2()
+    </script>
+</body>
+</html>
