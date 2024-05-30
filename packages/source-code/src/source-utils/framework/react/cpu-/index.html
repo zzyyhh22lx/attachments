@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Time Slicing Example</title>
+</head>
+
+<body>
+    时间切片
+    <button id="generateButton">Generate Elements</button>
+    <div id="container"></div>
+    <script>
+        const container = document.getElementById('container');
+        const generateButton = document.getElementById('generateButton');
+
+        let isGenerating = false;
+
+        function generateElements(count) {
+            let elementsCreated = 0;
+            const startTime = performance.now();
+
+            function createElements(deadline) {
+                while (deadline.timeRemaining() > 0 && elementsCreated < count) {
+                    const element = document.createElement('div');
+                    element.textContent = `Element ${elementsCreated + 1}`;
+                    container.appendChild(element);
+                    elementsCreated++;
+                }
+
+                if (elementsCreated < count) {
+                    requestIdleCallback(createElements);
+                } else {
+                    console.log(`Elements created in ${performance.now() - startTime}ms`);
+                    isGenerating = false;
+                }
+            }
+
+            isGenerating = true;
+            requestIdleCallback(createElements);
+        }
+
+        generateButton.addEventListener('click', () => {
+            if (!isGenerating) {
+                generateElements(10000); // 生成 10,000 个元素
+            }
+        });
+    </script>
+</body>
+
+</html>
