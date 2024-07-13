@@ -13,9 +13,9 @@ import { swap } from '../../utils';
 export function bubbleSort(nums: number[]): number[] {
     // 优化 避免重复执行
     let b = true;
-    while(b) {
+    while (b) {
         b = false;
-        for(let i = 0; i < nums.length - 1; i++) {
+        for (let i = 0; i < nums.length - 1; i++) {
             if (nums[i] > nums[i + 1]) {
                 swap(nums, i, i + 1);
                 b = true;
@@ -23,4 +23,38 @@ export function bubbleSort(nums: number[]): number[] {
         }
     }
     return nums;
+}
+
+// 递归实现
+function recursion_bubbleSort(nums: number[], isStart: boolean = true): number[] {
+    if (!isStart) return nums;
+    isStart = false;
+    for (let i = 0; i < nums.length - 1; i++) {
+        if (nums[i] > nums[i + 1]) {
+            swap(nums, i, i + 1);
+            isStart = true;
+        }
+    }
+    return recursion_bubbleSort(nums, isStart);
+}
+
+export function sort(nums: number[]): number[] {
+    for (let j = 0; j < nums.length; j++) {
+        for (let i = 0; i < nums.length - 1; i++) {
+            if (nums[i] > nums[i + 1]) {
+                swap(nums, i, j);
+            }
+        }
+    }
+    return nums;
+}
+
+function recursion_sort(nums, j = 0) {
+    if (j >= nums.length) return nums;
+    for (let i = 0; i < nums.length; i++) {
+        if (nums[i] > nums[j]) {
+            swap(nums, i, j);
+        }
+    }
+    return recursion_sort(nums, ++j);
 }

@@ -10,14 +10,25 @@ import { swap } from '../../utils';
  * @returns 
  */
 export function selectionSort(nums: number[]): number[] {
-    for(let i = 0; i < nums.length - 1; i++) {
+    for (let i = 0; i < nums.length - 1; i++) {
         let index = i;
-        for(let j = i + 1; j < nums.length; j++) {
-            if (nums[index] < nums[j]) {
+        for (let j = i + 1; j < nums.length; j++) {
+            if (nums[index] > nums[j]) {
                 index = j;
             }
         }
         swap(nums, i, index);
     }
     return nums;
+}
+
+// 递归实现
+function recursion_selectionSort(nums: number[], i: number = 0): number[] {
+    if (i >= nums.length) return nums;
+    let index = i;
+    for (let j = i + 1; j < nums.length; j++) {
+        if (nums[j] < nums[index]) index = j;
+    }
+    swap(nums, i, index);
+    return recursion_selectionSort(nums, i + 1);
 }

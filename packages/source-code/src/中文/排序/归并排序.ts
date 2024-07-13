@@ -26,8 +26,8 @@ export function merge(A: number[], B: number[]): number[] {
     const n = A.length + B.length;
     let i = 0, j = 0;
     A.push(Number.MAX_VALUE), B.push(Number.MAX_VALUE)
-    const res: number[] =  [];
-    while(i + j < n) {
+    const res: number[] = [];
+    while (i + j < n) {
         if (A[i] > B[j]) {
             res.push(B[j++]);
         } else {
@@ -36,4 +36,23 @@ export function merge(A: number[], B: number[]): number[] {
     }
     A.pop(), B.pop();
     return res;
+}
+
+// 迭代
+function iterative_mergeSort(nums) {
+    const stack = nums.map(item => [item]);
+    while (stack.length > 1) {
+        const aux = [...stack];
+        stack.length = 0;
+        while (aux.length > 0) {
+            const l = aux.shift();
+            if (aux.length === 0) {
+                stack.push(l);
+                break;
+            }
+            const r = aux.shift();
+            stack.push(merge(l, r));
+        }
+    }
+    return stack.shift();
 }

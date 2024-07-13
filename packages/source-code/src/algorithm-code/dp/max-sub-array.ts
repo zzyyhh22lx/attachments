@@ -7,10 +7,11 @@
  * https://leetcode.cn/problems/maximum-subarray/?envType=study-plan-v2&envId=top-100-liked
  * @param nums 
  */
-function maxSubArray(nums: number[]): number {
+export function maxSubArray(nums: number[]): number {
     const n = nums.length;
     let max = nums[0], dp = nums[0];
-    for(let i = 1; i < n; i++) {
+    for (let i = 1; i < n; i++) {
+        // dp + nums[i]代表连续数组
         dp = Math.max(dp + nums[i], nums[i]);
         max = Math.max(dp, max);
     }
