@@ -356,7 +356,7 @@ export class LisseTable {
     dragBoxEle.innerHTML = th.width.reduce(
       (acc, cur, index) =>
         `${acc}<div class="lisse-drag-grid" style="margin-left:${cur -
-          5}px;" data-index="${index}"></div>`,
+        5}px;" data-index="${index}"></div>`,
       '',
     );
   }

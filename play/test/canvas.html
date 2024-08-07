@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Canvas 文本输入示例</title>
+    <style>
+        #myCanvas {
+            border: 1px solid #000;
+        }
+
+        #textInput {
+            position: absolute;
+            border: none;
+            /* 移除边框 */
+            outline: none;
+            /* 移除焦点轮廓 */
+            display: none;
+            /* 初始不显示 */
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="myCanvas" width="600" height="400"></canvas>
+    <input type="text" id="textInput" />
+    <script>
+        const canvas = document.getElementById('myCanvas');
+        const ctx = canvas.getContext('2d');
+        const textInput = document.getElementById('textInput');
+
+        // 绘制Canvas背景
+        function drawBackground() {
+            ctx.fillStyle = "#f0f0f0";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        drawBackground(); // 初始化背景
+
+        canvas.addEventListener('click', function (e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left; // 计算相对于Canvas的X坐标
+            const y = e.clientY - rect.top; // 计算相对于Canvas的Y坐标
+
+            // 显示输入框，并调整位置
+            textInput.style.display = 'block';
+            textInput.style.left = `${x + rect.left}px`;
+            textInput.style.top = `${y + rect.top}px`;
+            textInput.value = ''; // 清空输入框
+            textInput.focus(); // 设置焦点
+        });
+
+        textInput.addEventListener('input', function () {
+            const text = textInput.value;
+
+            // 清除Canvas并重新绘制背景和文本
+            drawBackground();
+            ctx.fillStyle = "#000";
+            ctx.font = "16px Arial";
+            ctx.fillText(text, parseFloat(textInput.style.left), parseFloat(textInput.style.top)); // 绘制文本
+        });
+
+        textInput.addEventListener('blur', function () {
+            // 用户完成输入后隐藏输入框
+            textInput.style.display = 'none';
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,33 @@
+<div id="app"></div>
+<div id="content"></div>
+
+<style>
+    #app {
+        height: 100px;
+        width: 100px;
+        background-color: #409eff;
+    }
+</style>
+
+<script>
+    let data = [];
+    const observerInstance = new PerformanceObserver((list) => {
+        list.getEntries().forEach(item => data.push(item));
+    });
+    observerInstance.observe({
+        entryTypes: ['paint', 'largest-contentful-paint']
+    });
+</script>
+
+<script>
+    setTimeout(() => {
+        const el = document.getElementById("app");
+        el.innerText = "hello world";
+        const res = data.map(item => `${item.name}: ${item.startTime}`).join('\n');
+    }, 2000);
+    setTimeout(() => {
+        const el2 = document.getElementById("content");
+        el2.innerText = data.map(item => `${item.name}: ${item.startTime}`).join('\n');
+        console.log(data);
+    }, 3000);
+</script>

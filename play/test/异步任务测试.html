@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .a {}
+    </style>
+</head>
+
+<body>
+    <div style="width: 1000px; height: 100vh; overflow: scroll;" id="div">
+        <div style="width: 1000px; background-color: aliceblue; height: 1000px;"></div>
+    </div>
+    <script>
+        const c = document.createElement("canvas");
+        c.width = 100000;
+        c.height = 10000000;
+        div.appendChild(c);
+        const fn = () => {
+            setTimeout(() => {
+                let j = 0;
+                for (let i = 0; i < 100; i++) {
+                    j = i;
+                }
+                console.log('测试')
+                fn();
+            });
+        }
+        fn();
+        div.addEventListener('scroll', () => {
+            console.log('111');
+        })
+    </script>
+</body>
+
+</html>

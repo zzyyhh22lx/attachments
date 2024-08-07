@@ -14,7 +14,7 @@ function permute(nums: number[]): number[][] {
             res.push([...path]);
             return;
         }
-        for(let i = 0; i < n; i++) {
+        for (let i = 0; i < n; i++) {
             if (used[i]) continue;
             path.push(nums[i]);
             // 同支
@@ -27,3 +27,4 @@ function permute(nums: number[]): number[][] {
     backtrace(new Array(n).fill(false));
     return res;
 };
+

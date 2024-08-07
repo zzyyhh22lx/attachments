@@ -20,11 +20,18 @@ import { LisseTable } from '@attachments/lisse-table';
 const tabled = ref();
 const data: string[][] = [];
 onMounted(() => {
-  for(let i = 0; i < 100; i++) {
-    data.push(['121333333333333333333333312345', '2', '3', '4']);
+  for(let i = 0; i < 20000; i++) {
+    data.push(['121333333333333333333333312345', String(i), '3', '4']);
   }
   const allDataTable = new LisseTable(tabled.value, {
     data,
+    options: {
+      column: { adjust: true },
+      waterMarker: {
+        enable: true,
+        text: 'lhy'
+      },
+    },
     columns: ['16666你好你好女孩','2','3','4']
   })
   allDataTable.createTable();

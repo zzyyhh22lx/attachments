@@ -1,0 +1,51 @@
+<div class="card-container">
+    <div class="card">卡片 1</div>
+    <div class="card">卡片 2</div>
+    <div class="card">卡片 3</div>
+</div>
+<div class="card-container">
+    <div class="card">卡片 1</div>
+    <div class="card">卡片 2</div>
+    <div class="card">卡片 3</div>
+</div>
+<div class="card-container">
+    <div class="card">卡片 1</div>
+    <div class="card">卡片 2</div>
+    <div class="card">卡片 3</div>
+</div>
+<style>
+    .card-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 20px;
+        /* 你想要的固定间隙 */
+    }
+
+    .card {
+        flex: 1;
+        /* 使卡片均匀分配空间 */
+        /* 为了看到效果，可以给卡片一些样式 */
+        padding: 10px;
+        background-color: aliceblue;
+    }
+</style>
+<div class="grid-container">
+    <div class="grid-item">卡片 1</div>
+    <div class="grid-item">卡片 2</div>
+    <div class="grid-item">卡片 3</div>
+</div>
+<style>
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 20px;
+        /* 你想要的固定间隙 */
+    }
+
+    .grid-item {
+        padding: 10px;
+        border: 1px solid #ccc;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+</style>
