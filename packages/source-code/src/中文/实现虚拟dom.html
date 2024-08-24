@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script>
+        function createElement(type, props, ...children) {
+            return { type, props: props || {}, children };
+        }
+
+        function render(vnode, container) {
+            if (typeof vnode === 'string') {
+                const textNode = document.createTextNode(vnode);
+                return container.appendChild(textNode);
+            }
+
+            const el = document.createElement(vnode.type);
+
+            Object.keys(vnode.props).forEach(key => {
+                el.setAttribute(key, vnode.props[key]);
+            });
+
+            vnode.children.forEach(child => render(child, el));
+
+            container.appendChild(el);
+        }
+
+        const vdom = createElement('div', { id: 'app' },
+            createElement('h1', null, 'Hello, Virtual DOM'),
+            createElement('p', null, 'This is a simple virtual DOM implementation.')
+        );
+
+        const root = document.getElementById('root');
+        render(vdom, root);
+    </script>
+</body>
+
+</html>

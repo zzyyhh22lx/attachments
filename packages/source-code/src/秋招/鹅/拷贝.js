@@ -1,6 +1,6 @@
 //  浅拷贝(只能拷贝{}[])
 const shallowClone = (object) => {
-    if (typeof object !== 'object') return object;
+    if (typeof object !== 'object' || object === null) return object;
     return Array.isArray(object) ? [...object] : { ...object };
 }
 
